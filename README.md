@@ -28,7 +28,7 @@ and feeding a flywheel of signal → execution → correction → memory.
 | Folder | Contents |
 |--------|----------|
 | `skills/` | Claude skill files for each automation — install directly into Claude Projects |
-| `n8n-workflows/` | Workflow specs and setup instructions for N8N |
+| `n8n-workflows/` | Workflow specs and setup instructions for n8n |
 | `confluence-templates/` | PRD, decision log, and retro templates |
 | `jira-templates/` | Ticket template with acceptance criteria, KPIs, and scope |
 | `CLAUDE.md` | Global rules file for PM Claude sessions |
