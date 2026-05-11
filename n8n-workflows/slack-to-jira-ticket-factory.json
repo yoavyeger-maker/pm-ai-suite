@@ -1,0 +1,160 @@
+{
+  "name": "Slack to Jira Ticket Factory",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "slack-ticket-factory",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Slack Slash Command",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "slack-ticket-factory-webhook"
+    },
+    {
+      "parameters": {
+        "model": "claude-3-5-sonnet-20240620",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "message": "You are a PM Ticket Factory. Your job is to convert raw, messy feature requests into structured, ready-to-work Jira tickets.\n\nRules:\n1. Infer the 'why' if it's missing, but do not invent new features.\n2. Write Acceptance Criteria in Given/When/Then format.\n3. Include Edge Cases and Out of Scope sections.\n\nYou MUST output ONLY a valid JSON object with exactly two keys:\n- \"title\": A verb-first title under 60 characters.\n- \"description\": The full markdown body of the ticket (User Story, Problem, ACs, KPIs, Edge Cases, Out of Scope, Story Points)."
+            },
+            {
+              "role": "user",
+              "message": "={{ $json.body.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "anthropic-node",
+      "name": "Anthropic Claude",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "anthropic-api-key",
+          "name": "Anthropic API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "parse-json",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.jsonParse",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "project": "YOUR_PROJECT_KEY",
+        "issueType": "Story",
+        "summary": "={{ $json.title }}",
+        "description": "={{ $json.description }}",
+        "additionalFields": {}
+      },
+      "id": "jira-node",
+      "name": "Create Jira Ticket",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        660,
+        0
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "jira-credentials",
+          "name": "Jira Software Cloud API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "channel": "={{ $('Slack Slash Command').item.json.body.channel_id }}",
+        "text": "=Ticket created successfully! \n*{{ $json.key }}*: {{ $('Parse JSON').item.json.title }}\nhttps://your-domain.atlassian.net/browse/{{ $json.key }}",
+        "otherOptions": {}
+      },
+      "id": "slack-reply",
+      "name": "Reply to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ],
+      "credentials": {
+        "slackApi": {
+          "id": "slack-credentials",
+          "name": "Slack API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Slack Slash Command": {
+      "main": [
+        [
+          {
+            "node": "Anthropic Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Claude": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Create Jira Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Jira Ticket": {
+      "main": [
+        [
+          {
+            "node": "Reply to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
