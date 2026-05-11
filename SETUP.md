@@ -107,4 +107,4 @@ You are set up with the PM AI Suite.
 
 Full blueprint and architecture guide: https://yoavyeger.com/pm-suite  
 Repo: https://github.com/yoavyeger-maker/pm-ai-suite  
-Author: Yoav Yeger — Product Director, Marbella
+Author: Yoav Yeger — Product Director
