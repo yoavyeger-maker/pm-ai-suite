@@ -5,7 +5,7 @@ friction from their PM org and redirect time toward judgment, discovery,
 and decisions.
 
 This is not a product. It is an open reference architecture — a set of 
-Claude skills, N8N workflow specs, Jira and Confluence templates, and a 
+Claude skills, n8n workflow specs, Jira and Confluence templates, and a 
 Slack command layer that product teams can adopt, adapt, and extend.
 
 ---
@@ -70,8 +70,8 @@ Then add the relevant SKILL.md files as Project knowledge files.
 Copy any template from `confluence-templates/` or `jira-templates/` into 
 your own tool. No setup required.
 
-**Option C — Deploy the full N8N layer**
-Follow the setup guide in `n8n-workflows/README.md`. Requires an N8N 
+**Option C — Deploy the full n8n layer**
+Follow the setup guide in `n8n-workflows/README.md`. Requires an n8n 
 instance, Slack app, and API tokens for Jira and Confluence.
 
 ---
