@@ -58,7 +58,7 @@ To install a skill, copy its folder into ~/.claude/skills/:
 ## Step 5: Connect Your Toolchain (Optional)
 
 If you want Claude to operate across Jira, Confluence, Notion, and Slack 
-directly — not just generate structured text — set up the N8N layer.
+directly — not just generate structured text — set up the n8n layer.
 
 Ask me if you want to set this up. If yes, follow the instructions in 
 `n8n-workflows/README.md`.
@@ -67,7 +67,7 @@ Quick version:
 1. Spin up an N8N instance (cloud.n8n.io or self-hosted via Railway)
 2. Add API credentials: Jira, Confluence, Notion, Slack, Claude
 3. Import the workflow JSON files from `n8n-workflows/`
-4. Configure your Slack slash commands pointing to N8N webhook URLs
+4. Configure your Slack slash commands pointing to n8n webhook URLs
 5. Set cron schedules to your team timezone (CET recommended)
 
 The full setup guide with credential configuration is in `n8n-workflows/README.md`.
