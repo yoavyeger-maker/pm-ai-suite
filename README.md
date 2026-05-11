@@ -1,6 +1,3 @@
-# pm-ai-suite
-A blueprint for structuring AI into product teams - automations, Claude skills, n8n workflows, and templates for PMs who want to operate as system architects.
-
 # PM AI Suite
 
 A practical blueprint for Heads of Product who want to remove operational 
