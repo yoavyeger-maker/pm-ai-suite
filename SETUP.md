@@ -1,103 +1,79 @@
 # Setup Guide — PM AI Suite
 
-You are setting up Yoav's PM AI Suite on this machine.
-Walk me through it step by step — describe what each one does 
-and let me pick which ones I want.
+There are three levels of setup. Start with Level 1. Add more only when you need it.
 
 ---
 
-## Step 1: Clone the Repo
+## Level 1 — Claude Skills (30 minutes, no infrastructure required)
 
-Check if the repo is already cloned. If not, clone it:
+This level gives your PMs enforced standards for their daily work using Claude Projects.
 
-git clone https://github.com/yoavyeger-maker/pm-ai-suite ~/Projects/pm-ai-suite
+### 1. Create the Project
+1. Open Claude and create a new Project named **PM Work**.
+2. Open `CLAUDE.md` from this repo and paste the full contents into the **Project Instructions**.
 
----
+### 2. Add the Skills
+Upload each file from the `skills/` directory as a separate **Project Knowledge** file.
 
-## Step 2: Add Plugin Marketplaces
+| Skill | What it does |
+| --- | --- |
+| `ticket-factory` | Converts a raw Slack request into a structured Jira ticket with user story, ACs, KPIs, Figma link, and scope. |
+| `prd-generator` | Generates a first-draft PRD scaffold in Confluence format — PM completes judgment and customer evidence sections. |
+| `discovery-brief` | Compiles a weekly discovery brief with open questions, research sessions, and data gaps from sprint context. |
+| `opportunity-scoring` | RICE scoring with explicit assumptions and confidence levels — flags what to validate before committing. |
+| `feedback-triage` | Classifies raw user feedback by type, severity, and segment — routes to Jira or flags as duplicate. |
+| `ac-validator` | Quality gate before engineering handoff — validates ACs are testable, KPIs have targets, and Figma is linked. |
+| `competitor-intelligence` | Synthesizes raw competitor updates into a strategic brief, stripping marketing fluff and assessing threat level. |
+| `stakeholder-update` | Translates messy sprint notes into a crisp, executive-friendly update with strict Red/Yellow/Green status. |
 
-These are registries that host Claude Code plugins. Add them both:
-
-claude plugin add github:anthropics/claude-plugins-official
-claude plugin add git:https://github.com/EveryInc/compound-writing-plugin.git
-
----
-
-## Step 3: Install Plugins (Let Me Choose)
-
-Present each plugin one at a time. Explain what it does and ask if I want it.
-
-| Plugin | Command | What it does |
-|--------|---------|--------------|
-| knowledge-work (product-management) | `claude plugin enable product-management@claude-plugins-official` | 14 PM commands covering standups, sprint planning, retros, stakeholder updates, and opportunity scoring — the official Anthropic PM plugin |
-| compound-writing | `claude plugin enable compound-writing@every-marketplace` | Enforces writing quality across PRDs, retros, and stakeholder updates — catches vague language, passive voice, and filler |
-| frontend-design | `claude plugin enable frontend-design@claude-plugins-official` | Production-grade UI implementation skill — useful when briefing Figma-to-code handoffs |
-| ralph-loop | `claude plugin enable ralph-loop@claude-plugins-official` | Runs Claude in a loop until a task is fully complete — useful for long ticket batches or multi-step PRD generation |
-| plugin-dev | `claude plugin enable plugin-dev@claude-plugins-official` | Tools for building your own Claude Code plugins — use this when you want to extend the PM AI Suite with custom commands |
+### 3. Test
+Paste a raw feature request into the chat and type `/ticket`. Confirm the output matches the Jira template structure.
 
 ---
 
-## Step 4: Install Skills (Let Me Choose)
+## Level 2 — Templates in Jira and Confluence (1 hour, no infrastructure required)
 
-Skills are prompt templates you invoke with slash commands.
-Present each one and ask if I want it.
+This level ensures that tickets and documents created manually match the structure of those created by Claude.
 
-To install a skill, copy its folder into ~/.claude/skills/:
+### Jira
+1. Install `jira-templates/ticket-template.md` as the default description on your **Story** issue type.
+2. Install `jira-templates/bug-template.md` as the default description on your **Bug** issue type.
 
-| Skill | Command | What it does |
-|-------|---------|--------------|
-| ticket-factory | `cp -r ~/Projects/pm-ai-suite/skills/ticket-factory ~/.claude/skills/` | Converts a raw Slack request into a structured Jira ticket with user story, ACs, KPIs, Figma link, and scope |
-| prd-generator | `cp -r ~/Projects/pm-ai-suite/skills/prd-generator ~/.claude/skills/` | Generates a first-draft PRD scaffold in Confluence format — PM completes judgment and customer evidence sections |
-| discovery-brief | `cp -r ~/Projects/pm-ai-suite/skills/discovery-brief ~/.claude/skills/` | Compiles a weekly discovery brief with open questions, research sessions, and data gaps from sprint context |
-| opportunity-scoring | `cp -r ~/Projects/pm-ai-suite/skills/opportunity-scoring ~/.claude/skills/` | RICE scoring with explicit assumptions and confidence levels — flags what to validate before committing |
-| feedback-triage | `cp -r ~/Projects/pm-ai-suite/skills/feedback-triage ~/.claude/skills/` | Classifies raw user feedback by type, severity, and segment — routes to Jira or flags as duplicate |
-| ac-validator | `cp -r ~/Projects/pm-ai-suite/skills/ac-validator ~/.claude/skills/` | Quality gate before engineering handoff — validates ACs are testable, KPIs have targets, and Figma is linked |
+### Confluence
+1. Create a new Space Template from `confluence-templates/prd-template.md`.
+2. Create a new Space Template from `confluence-templates/decision-log-template.md`.
+3. Create a new Space Template from `confluence-templates/retro-template.md`.
 
 ---
 
-## Step 5: Connect Your Toolchain (Optional)
+## Level 3 — Full n8n Automation (Half day, requires infrastructure)
 
-If you want Claude to operate across Jira, Confluence, Notion, and Slack 
-directly — not just generate structured text — set up the n8n layer.
+This level wires Slack directly to Jira using n8n, allowing PMs to generate and create tickets without leaving Slack.
 
-Ask me if you want to set this up. If yes, follow the instructions in 
-`n8n-workflows/README.md`.
+### 1. Infrastructure
+*   Spin up an n8n instance ([cloud.n8n.io](https://cloud.n8n.io) or Railway self-hosted).
+*   Create a Slack app with slash commands and incoming webhooks enabled.
+*   Add your Anthropic API key to n8n credentials.
+*   Configure your Jira API token in n8n.
+*   Configure your Confluence API token in n8n (optional — only needed for brief automation).
 
-Quick version:
-1. Spin up an N8N instance (cloud.n8n.io or self-hosted via Railway)
-2. Add API credentials: Jira, Confluence, Notion, Slack, Claude
-3. Import the workflow JSON files from `n8n-workflows/`
-4. Configure your Slack slash commands pointing to n8n webhook URLs
-5. Set cron schedules to your team timezone (CET recommended)
+### 2. Slack Channels
+Create the following channels in your workspace:
+*   `#pm-tickets` — receives Jira ticket confirmations
+*   `#pm-discovery` — receives weekly discovery briefs
+*   `#pm-intel` — receives competitor intelligence updates
+*   `#product-updates` — receives stakeholder updates
 
-The full setup guide with credential configuration is in `n8n-workflows/README.md`.
+### 3. Workflow Setup
+1. Import `n8n-workflows/slack-to-jira-ticket-factory.json` into n8n.
+2. Set your Jira Project Key in the **Create Jira Ticket** node.
+3. Replace `your-domain.atlassian.net` in the **Slack reply** node with your actual Jira domain.
+4. Activate the workflow.
 
----
-
-## Step 6: Configure Claude Project
-
-1. Open Claude → Create a new Project named `PM Work`
-2. In Project Instructions, paste the contents of `CLAUDE.md` from this repo
-3. Add each `SKILL.md` file you selected above as Project knowledge files
-4. Test with: `/ticket Add Google OAuth to the onboarding flow`
-
-Claude should return a fully structured Jira ticket following the template.
-
----
-
-## Step 7: Verify
-
-After installation, run:
-
-claude plugin list
-
-Confirm all selected plugins are enabled.
-
-Then test one skill end to end:
-
-/ticket [describe any feature request in plain language]
-
-You should get a structured Jira ticket back within seconds.
+### 4. Validation
+1. Type `/ticket Add Google OAuth to the onboarding flow` in Slack.
+2. Confirm a Jira issue is created with the full ticket template populated.
+3. Confirm the Slack thread receives the Jira issue link and key.
 
 ---
 
@@ -105,6 +81,6 @@ You should get a structured Jira ticket back within seconds.
 
 You are set up with the PM AI Suite.
 
-Full blueprint and architecture guide: https://yoavyeger.com/pm-suite  
-Repo: https://github.com/yoavyeger-maker/pm-ai-suite  
+Full blueprint and architecture guide: [yoavyeger.com/pm-suite](https://yoavyeger.com/pm-suite)  
+Repo: [github.com/yoavyeger-maker/pm-ai-suite](https://github.com/yoavyeger-maker/pm-ai-suite)  
 Author: Yoav Yeger — Product Director
